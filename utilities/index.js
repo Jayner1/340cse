@@ -31,49 +31,64 @@ Util.getNav = async function (req, res, next) {
  **************************************** */
 Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
 
-/* **************************************
-* Build the classification view HTML
-* ************************************ */
-Util.buildClassificationGrid = async function(data){
-  let grid
-  if(data.length > 0){
-    grid = '<ul id="inv-display">'
-    data.forEach(vehicle => { 
-      grid += '<li>'
-      grid +=  '<a href="../../inv/detail/'+ vehicle.inv_id 
-      + '" title="View ' + vehicle.inv_make + ' '+ vehicle.inv_model 
-      + 'details"><img src="' + vehicle.inv_thumbnail 
-      +'" alt="Image of '+ vehicle.inv_make + ' ' + vehicle.inv_model 
-      +' on CSE Motors"></a>'
-      grid += '<div class="namePrice">'
-      grid += '<hr>'
-      grid += '<h2>'
-      grid += '<a href="../../inv/detail/' + vehicle.inv_id +'" title="View ' 
-      + vehicle.inv_make + ' ' + vehicle.inv_model + ' details">' 
-      + vehicle.inv_make + ' ' + vehicle.inv_model + '</a>'
-      grid += '</h2>'
-      grid += '<span>$' 
-      + new Intl.NumberFormat('en-US').format(vehicle.inv_price) + '</span>'
-      grid += '</div>'
-      grid += '</li>'
-    })
-    grid += '</ul>'
-  } else { 
-    grid += '<p class="notice">Sorry, no matching vehicles could be found.</p>'
+
+// Function to handle image paths
+const handleImagePath = (imagePath) => {
+  // If the image path is already absolute (starts with /images/vehicles/), return as is
+  if (imagePath && imagePath.startsWith('/images/vehicles/')) {
+    return imagePath;
   }
-  return grid
+  // If the image path is a relative path (not starting with /images), add the prefix
+  if (imagePath && !imagePath.startsWith('/images')) {
+    return '/images/vehicles/' + imagePath;
+  }
+  // If the path already starts with /images, just return it as is (e.g., /images/survan.jpg)
+  return imagePath;
 }
 
-/* **************************************
- * Format vehicle details for detailed view
- * ************************************ */
+Util.buildClassificationGrid = async function(data){
+  let grid;
+  if(data.length > 0){
+    grid = '<ul id="inv-display">';
+    data.forEach(vehicle => { 
+      // Handle image path
+      let imagePath = handleImagePath(vehicle.inv_thumbnail);
+      
+      grid += '<li>';
+      grid +=  '<a href="../../inv/detail/' + vehicle.inv_id + 
+                '" title="View ' + vehicle.inv_make + ' ' + vehicle.inv_model + 
+                ' details"><img src="' + imagePath + 
+                '" alt="Image of ' + vehicle.inv_make + ' ' + vehicle.inv_model + 
+                ' on CSE Motors"></a>';
+      grid += '<div class="namePrice">';
+      grid += '<hr>';
+      grid += '<h2>';
+      grid += '<a href="../../inv/detail/' + vehicle.inv_id + 
+                '" title="View ' + vehicle.inv_make + ' ' + vehicle.inv_model + 
+                ' details">' + vehicle.inv_make + ' ' + vehicle.inv_model + '</a>';
+      grid += '</h2>';
+      grid += '<span>$' + new Intl.NumberFormat('en-US').format(vehicle.inv_price) + '</span>';
+      grid += '</div>';
+      grid += '</li>';
+    });
+    grid += '</ul>';
+  } else { 
+    grid += '<p class="notice">Sorry, no matching vehicles could be found.</p>';
+  }
+  return grid;
+}
+
 Util.formatVehicleDetails = function(vehicle) {
   const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(vehicle.inv_price);
   const mileage = new Intl.NumberFormat('en-US').format(vehicle.inv_miles);
+
+  // Handle image path
+  let imagePath = handleImagePath(vehicle.inv_image);
+
   return `
     <div class="vehicle-details">
       <div class="vehicle-image">
-        <img src="${vehicle.inv_image}" alt="${vehicle.inv_make} ${vehicle.inv_model}">
+        <img src="${imagePath}" alt="${vehicle.inv_make} ${vehicle.inv_model}">
       </div>
       <div class="vehicle-content">
         <h1>${vehicle.inv_make} ${vehicle.inv_model}</h1>
@@ -85,5 +100,7 @@ Util.formatVehicleDetails = function(vehicle) {
     </div>
   `;
 }
+
+
 
 module.exports = Util
