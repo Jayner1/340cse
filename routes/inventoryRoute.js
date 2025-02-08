@@ -1,11 +1,11 @@
-const express = require("express")
-const router = new express.Router()
-const invController = require("../controllers/invController")
+const express = require("express");
+const router = express.Router();
+const invController = require("../controllers/invController");
 
-router.get("/type/:classificationId", invController.buildByClassificationId);
+router.get("/classification/:classificationId", invController.buildByClassificationId);
 
-router.get('/api/inventory/:classificationId', invController.getInventoryData)
+// router.get("/api/inventory/:classificationId", invController.getInventoryData);
 
-router.get('/inventory/detail/:itemId', invController.buildInventoryDetail);  
+router.get("/detail/:id", invController.getVehicleDetails);
 
 module.exports = router;

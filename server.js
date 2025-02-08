@@ -12,46 +12,52 @@ const app = express()
 const static = require("./routes/static")
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
-const utilities = require("./utilities/index");
+const utilities = require('./utilities/index');
 
 /* ***********************
  * View Engine and Templates
  *************************/
-
 app.set("view engine", "ejs")
 app.use(expressLayouts)
-app.set("layout", "./layouts/layout") // not as views root
-
+app.set("layout", "./layouts/layout") 
 
 /* ***********************
  * Routes
  *************************/
 app.use(static)
-app.use(express.static('public')); // Make sure the 'public' folder contains your images
-
-
 // Index Route
 app.get("/", utilities.handleErrors(baseController.buildHome))
+// Inventory routes
 app.use("/inv", inventoryRoute)
+// Server crash
+app.get("/trigger-500-error", (req, res, next) => {
+  const undefinedValue = undefined;
+  undefinedValue.ExistentProperty;
+});
 // File Not Found Route - must be last route in list
 app.use(async (req, res, next) => {
-  next({status: 404, message: 'Sorry, we appear to have lost that page.'})
+  next({status: 404, message: 'Oops! Something went wrong.'})
 })
 
 /* ***********************
-* Express Error Handler
-* Place after all other middleware
-*************************/
+ * Express Error Handler
+ * Place after all the other middlweware
+ * Unit 3, Basic Error Handling Activity
+ *************************/
 app.use(async (err, req, res, next) => {
-  let nav = await utilities.getNav()
-  console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'Oh no! There was a crash. Maybe try a different route?'}
-  res.render("errors/error", {
-    title: err.status || 'Server Error',
+  let nav = await utilities.getNav();
+  console.error(`Error at: "${req.originalUrl}": ${err.message}`);
+  const status = err.status || 500;
+  const message =
+    status === 404
+      ? err.message
+      : "Oh no! There was a crash. Maybe try a different route?";
+  res.status(status).render("errors/error", {
+    title: `${status} Error`,
     message,
-    nav
-  })
-})
+    nav,
+  });
+});
 
 
 /* ***********************
@@ -67,6 +73,3 @@ const host = process.env.HOST
 app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`)
 })
-
-
-// Hello
