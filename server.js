@@ -27,6 +27,8 @@ app.set("layout", "./layouts/layout") // not as views root
  * Routes
  *************************/
 app.use(static)
+app.use(express.static('public')); // Make sure the 'public' folder contains your images
+
 
 // Index Route
 app.get("/", utilities.handleErrors(baseController.buildHome))
