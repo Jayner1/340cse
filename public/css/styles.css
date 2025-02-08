@@ -238,6 +238,16 @@ body {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+.second-container {
+  background-color: white; 
+  border: 10px solid #007BFF; 
+  padding: 20px; 
+  margin: 20px auto;
+  width: 80%; 
+  max-width: 60px; 
+  border-radius: 10px;
+}
+
 .footer-container {
   background-color: #fff;
   border-top: 4px solid #007BFF; 
