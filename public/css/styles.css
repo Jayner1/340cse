@@ -106,10 +106,9 @@ a {
 }
 
 .hero-image {
-  position: relative;
-  width: 85%;
-  height: 100%;
-  max-width: 100%;
+  width: 100%; 
+  height: auto; 
+  max-width: 100%; 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
