@@ -22,7 +22,7 @@ h1 {
     border: 10px solid #007BFF;
     padding: 20px; 
     margin: 20px auto; 
-    width: 120%; 
+    width: 90%; 
     max-width: 1200px;
     border-radius: 10px; 
     display: flex; 
@@ -101,4 +101,12 @@ p a:hover {
     border-top: 4px solid #007BFF; 
     padding: 20px;
     text-align: center;
+}
+
+.password-requirements {
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #555;
+    font-style: italic;
 }
