@@ -2,6 +2,8 @@ const utilities = require("../utilities");
 const accountModel = require("../models/account-model");
 const pool = require("../database/index");
 const { check, validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs")
+
 
 /* ****************************************
  *  Deliver Login View
@@ -9,7 +11,7 @@ const { check, validationResult } = require("express-validator");
 async function buildLogin(req, res, next) {
     try {
         let nav = await utilities.getNav();
-        const flashMessage = req.flash("notice")[0] || ""; // Ensure flash message is retrieved properly
+        const flashMessage = req.flash("notice")[0] || ""; 
         res.render("account/login", {
             title: "Login",
             nav,
@@ -27,18 +29,16 @@ async function buildRegister(req, res, next) {
     try {
         let nav = await utilities.getNav(); 
         const flashMessages = req.flash('notice'); 
-        const flashMessage = flashMessages.length > 0 ? flashMessages[0] : ''; // Ensure it's a string
+        const flashMessage = flashMessages.length > 0 ? flashMessages[0] : ''; 
 
-        // Ensure errors are passed correctly, default to empty array
         const errors = req.flash('errors') || [];
 
-        // Get form values for stickiness (if any values were submitted previously)
         const { account_firstname = '', account_lastname = '', account_email = '' } = req.body;
 
         res.render("account/register", {
             title: "Register",
             nav,
-            flashMessage,  // Explicitly passing the flash message
+            flashMessage,  
             errors,
             account_firstname, 
             account_lastname,
@@ -85,6 +85,9 @@ async function loginAccount(req, res) {
 /* ****************************************
  *  Process Registration
  * **************************************** */
+/* ****************************************
+ *  Process Registration
+ * **************************************** */
 async function registerAccount(req, res) {
     const { account_firstname, account_lastname, account_email, account_password } = req.body;
     const errors = validationResult(req);
@@ -114,12 +117,29 @@ async function registerAccount(req, res) {
         });
     }
 
+    let hashedPassword;
+    try {
+        hashedPassword = await bcrypt.hash(account_password, 10); 
+    } catch (error) {
+        console.error("Error hashing password:", error);
+        req.flash("notice", "Sorry, there was an error processing the registration.");
+        return res.status(500).render("account/register", {
+            title: "Registration",
+            nav: await utilities.getNav(),
+            flashMessage: req.flash("notice").length > 0 ? req.flash("notice")[0] : '', 
+            errors: [],
+            account_firstname,
+            account_lastname,
+            account_email
+        });
+    }
+
     try {
         const regResult = await accountModel.registerAccount(
             account_firstname,
             account_lastname,
             account_email,
-            account_password
+            hashedPassword
         );
 
         if (regResult && regResult.account_id) {
@@ -151,6 +171,7 @@ async function registerAccount(req, res) {
         });
     }
 }
+
 
 
 module.exports = {
