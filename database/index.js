@@ -13,8 +13,6 @@ if (process.env.NODE_ENV == "development") {
     ssl:  false
   })
 
-// Added for troubleshooting queries
-// during development
 module.exports = {
   async query(text, params) {
     try {

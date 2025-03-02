@@ -271,3 +271,31 @@ body {
   padding: 20px;
   text-align: center;
 }
+
+.management {
+  background-color: #ffffff; 
+  border: 10px solid #007BFF; 
+  padding: 20px;
+  margin: 20px auto;
+  width: 90%;
+  max-width: 1200px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.inventory-form   {
+background-color: #ffffff; 
+border: 10px solid #007BFF; 
+padding: 20px;
+margin: 20px auto;
+width: 90%;
+max-width: 1200px;
+border-radius: 10px;
+display: flex;
+flex-direction: column;
+gap: 20px;
+box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
+}
