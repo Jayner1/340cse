@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+      
+    <% if (flashMessage && flashMessage.length > 0) { %>
+        <div class="notice">
+            <%= flashMessage %>
+        </div>
+    <% } %>
+    <div class="main-container">
+    <main>
+        <h1>Account Management</h1>
+        <p>You're logged in</p>
+        <p>Welcome, <%= account_firstname %>!</p>
+        <p>Email: <%= account_email %></p>
+    </main>
+    
+    <%- include('../partials/footer') %>
+    </div>
+</body>
+</html>

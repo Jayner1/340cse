@@ -1,6 +1,51 @@
 const invModel = require("../models/inventory-model");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const Util = {};
 
+/* ******************************
+ * Check JWT Login Middleware
+ * ****************************** */
+Util.checkLogin = (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (!token) {
+    req.flash("notice", "Please log in to access your account.");
+    return res.redirect("/account/login");
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    req.user = decoded; 
+    next();
+  } catch (error) {
+    req.flash("notice", "Session expired. Please log in again.");
+    res.clearCookie("jwt");
+    return res.redirect("/account/login");
+  }
+};
+
+Util.checkJWTToken = (req, res, next) => {
+  if (req.cookies.jwt) {
+   jwt.verify(
+    req.cookies.jwt,
+    process.env.ACCESS_TOKEN_SECRET,
+    function (err, accountData) {
+     if (err) {
+      req.flash("Please log in")
+      res.clearCookie("jwt")
+      return res.redirect("/account/login")
+     }
+     res.locals.accountData = accountData
+     res.locals.loggedin = 1
+     next()
+    })
+  } else {
+   next()
+  }
+ }
+
+/* ******************************
+ * Existing Utility Functions
+ * ****************************** */
 Util.getNav = async function () {
   try {
     const data = await invModel.getClassifications();
@@ -31,9 +76,9 @@ Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)
 const handleImagePath = (imagePath) => {
   if (!imagePath) return "/images/vehicles/no-image.png";
   const basePath = '/images/vehicles/';
-  const parts = imagePath.split('/').filter(part => part); 
-  const fileNameIndex = parts.lastIndexOf('vehicles') + 1; 
-  const fileName = parts.slice(fileNameIndex).join('/'); 
+  const parts = imagePath.split('/').filter(part => part);
+  const fileNameIndex = parts.lastIndexOf('vehicles') + 1;
+  const fileName = parts.slice(fileNameIndex).join('/');
   return basePath + fileName;
 };
 

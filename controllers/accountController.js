@@ -3,7 +3,8 @@ const accountModel = require("../models/account-model");
 const pool = require("../database/index");
 const { check, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs")
-
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 
 /* ****************************************
  *  Deliver Login View
@@ -54,33 +55,43 @@ async function buildRegister(req, res, next) {
  *  Login Account
  * **************************************** */
 async function loginAccount(req, res) {
-    const { account_email, account_password } = req.body;
-
-    try {
-        const sql = "SELECT * FROM account WHERE account_email = $1";
-        const result = await pool.query(sql, [account_email]);
-
-        if (result.rows.length === 0) {
-            req.flash("notice", "Invalid email or password.");
-            return res.status(401).redirect("/account/login");
-        }
-
-        const user = result.rows[0];
-
-        if (user.account_password === account_password) {
-            req.session.user = user;
-            req.flash("notice", `Welcome back, ${user.account_firstname}!`);
-            return res.redirect("/");
-        } else {
-            req.flash("notice", "Invalid email or password.");
-            return res.status(401).redirect("/account/login");
-        }
-    } catch (error) {
-        console.error("Error during login:", error);
-        req.flash("notice", "An error occurred. Please try again.");
-        return res.status(500).redirect("/account/login");
+    let nav = await utilities.getNav()
+    const { account_email, account_password } = req.body
+    const accountData = await accountModel.getAccountByEmail(account_email)
+    if (!accountData) {
+      req.flash("notice", "Please check your credentials and try again.")
+      res.status(400).render("account/login", {
+        title: "Login",
+        nav,
+        errors: null,
+        account_email,
+      })
+      return
     }
-}
+    try {
+      if (await bcrypt.compare(account_password, accountData.account_password)) {
+        delete accountData.account_password
+        const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 * 1000 })
+        if(process.env.NODE_ENV === 'development') {
+          res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
+        } else {
+          res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
+        }
+        return res.redirect("/account/")
+      }
+      else {
+        req.flash("message notice", "Please check your credentials and try again.")
+        res.status(400).render("account/login", {
+          title: "Login",
+          nav,
+          errors: null,
+          account_email,
+        })
+      }
+    } catch (error) {
+      throw new Error('Access Forbidden')
+    }
+  }
 
 /* ****************************************
  *  Process Registration
@@ -172,11 +183,43 @@ async function registerAccount(req, res) {
     }
 }
 
+async function showAccountManagement(req, res, next) {
+    try {
+        let nav = await utilities.getNav();
+        
+        // Verify JWT token from cookie
+        const token = req.cookies.jwt;
+        if (!token) {
+            req.flash("notice", "Please log in to access your account.");
+            return res.redirect("/account/login");
+        }
 
+        // Decode token to get user info
+        let accountData;
+        try {
+            accountData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        } catch (error) {
+            req.flash("notice", "Session expired. Please log in again.");
+            res.clearCookie("jwt");
+            return res.redirect("/account/login");
+        }
+
+        res.render("account/management", {
+            title: "Account Management",
+            nav,
+            flashMessage: req.flash("notice")[0] || "",
+            account_firstname: accountData.account_firstname,
+            account_email: accountData.account_email
+        });
+    } catch (error) {
+        next(error);
+    }
+}
 
 module.exports = {
     buildLogin,
     buildRegister,
     loginAccount,
     registerAccount,
+    showAccountManagement
 };
