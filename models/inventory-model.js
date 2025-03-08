@@ -97,14 +97,6 @@ const addInventoryToDb = async (vehicle) => {
   }
 };
 
-// Space added here
-
-/* ***************************
- *  Update Inventory Data
- * ************************** */
-/* ***************************
- *  Update Inventory Data
- * ************************** */
 /* ***************************
  *  Update Inventory Data
  * ************************** */
@@ -140,6 +132,21 @@ async function updateInventory(
     return data.rows[0];
   } catch (error) {
     console.error("model error: " + error);
+    throw error;
+  }
+}
+
+/* ***************************
+ *  Delete Inventory Item
+ * ************************** */
+async function deleteInventory(inv_id) {
+  try {
+    const sql = 'DELETE FROM public.inventory WHERE inv_id = $1';
+    const data = await pool.query(sql, [inv_id]);
+    return data;
+  } catch (error) {
+    console.error("deleteInventory error: " + error.message);
+    throw new Error("Delete Inventory Error");
   }
 }
 
@@ -149,5 +156,6 @@ module.exports = {
   getVehicleById,
   addClassificationToDb,
   addInventoryToDb,
-  updateInventory 
+  updateInventory,
+  deleteInventory
 };

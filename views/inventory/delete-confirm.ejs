@@ -1,0 +1,63 @@
+<div class="inventory-form">
+    <h1><%= title %></h1>
+  
+    <% if (errors && errors.length > 0) { %>
+      <div class="error-messages" role="alert" aria-live="polite">
+        <p>Errors occurred while submitting the form:</p>
+        <ul>
+          <% errors.forEach(error => { %>
+            <li><%= error %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+  
+    <p>Confirm Deletion - The delete is permanent.</p>
+    <form action="/inv/delete/<%= inv_id %>" method="post" id="deleteForm">
+      <label for="inv_make">Make:</label>
+      <input 
+        type="text" 
+        name="inv_make" 
+        id="inv_make" 
+        class="form-control" 
+        value="<%= inv_make || '' %>" 
+        readonly
+      >
+  
+      <label for="inv_model">Model:</label>
+      <input 
+        type="text" 
+        name="inv_model" 
+        id="inv_model" 
+        class="form-control" 
+        value="<%= inv_model || '' %>" 
+        readonly
+      >
+  
+      <label for="inv_year">Year:</label>
+      <input 
+        type="number" 
+        name="inv_year" 
+        id="inv_year" 
+        class="form-control" 
+        value="<%= inv_year || '' %>" 
+        readonly
+      >
+  
+      <label for="inv_price">Price:</label>
+      <input 
+        type="number" 
+        name="inv_price" 
+        id="inv_price" 
+        class="form-control" 
+        value="<%= inv_price || '' %>" 
+        step="0.01"
+        readonly
+      >
+  
+      <input type="hidden" name="inv_id" <% if(locals.inv_id) { %> value="<%= locals.inv_id %>" <% } %>>
+      <button type="submit" class="btn btn-primary">Delete</button>
+    </form>
+  
+    <a href="/inv/management">Back to Inventory Management</a>
+</div>

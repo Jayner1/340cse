@@ -12,14 +12,23 @@
     <h2>Manage Inventory</h2>
     <p>Select a classification from the list below to see the items belonging to that classification.</p>
 
-    <!-- Classification Select List -->
     <div class="classification-select">
         <label for="classificationList">Select Classification:</label>
         <%- classificationList %>
     </div>
 
-    <!-- Empty table for inventory display -->
-    <table id="inventoryDisplay"></table>
+    <table id="inventoryDisplay">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Price</th>
+                <th>Actions</th> 
+            </tr>
+        </thead>
+        <tbody></tbody> 
+    </table>
 
     <noscript>JavaScript must be enabled to use this page.</noscript>
 </main>
