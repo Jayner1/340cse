@@ -9,15 +9,14 @@
 <body>
     <%- include('../partials/header') %>
     
-    <% if (flashMessage && flashMessage.length > 0) { %>
-        <div class="notice">
-            <%= flashMessage %>
-        </div>
-    <% } %>
-    
     <div class="main-container">
         <main>
             <h1>Account Management</h1>
+            
+            <% if (flashMessage && flashMessage.length > 0) { %>
+                <div class="notice"><%= flashMessage %></div>
+            <% } %>
+            
             <h2>Welcome <%= account_firstname %></h2>
             <p><a href="/account/update/<%= account_id %>" title="Update your account details">Update Account Information</a></p>
             
@@ -28,8 +27,8 @@
             
             <p>Email: <%= account_email %></p>
         </main>
-        
-        <%- include('../partials/footer') %>
     </div>
+    
+    <%- include('../partials/footer') %>
 </body>
 </html>
