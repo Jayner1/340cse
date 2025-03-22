@@ -55,7 +55,7 @@ input[type="email"]:focus, input[type="password"]:focus {
 }
 
 button {
-    background-color: #5b9bd5;
+    background-color: blue;
     color: white;
     border: none;
     padding: 12px;
@@ -97,7 +97,7 @@ p a:hover {
 
 .main-container {
     background-color: white;
-    border: 10px solid #007BFF;
+    border: 10px solid blue;
     padding: 20px;
     margin: 20px auto;
     width: 105%;
@@ -118,7 +118,7 @@ input[type="text"], input[type="password"], input[type="email"], button {
 
 button {
     cursor: pointer;
-    background-color: #007BFF;
+    background-color: blue;
     color: white;
     font-size: 16px;
 }
