@@ -7,21 +7,29 @@
     <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
-      
+    <%- include('../partials/header') %>
+    
     <% if (flashMessage && flashMessage.length > 0) { %>
         <div class="notice">
             <%= flashMessage %>
         </div>
     <% } %>
-    <div class="main-container">
-    <main>
-        <h1>Account Management</h1>
-        <p>You're logged in</p>
-        <p>Welcome, <%= account_firstname %>!</p>
-        <p>Email: <%= account_email %></p>
-    </main>
     
-    <%- include('../partials/footer') %>
+    <div class="main-container">
+        <main>
+            <h1>Account Management</h1>
+            <h2>Welcome <%= account_firstname %></h2>
+            <p><a href="/account/update/<%= account_id %>" title="Update your account details">Update Account Information</a></p>
+            
+            <% if (account_type === 'Employee' || account_type === 'Admin') { %>
+                <h3>Inventory Management</h3>
+                <p><a href="/inv/" title="Manage inventory">Access Inventory Management</a></p>
+            <% } %>
+            
+            <p>Email: <%= account_email %></p>
+        </main>
+        
+        <%- include('../partials/footer') %>
     </div>
 </body>
 </html>

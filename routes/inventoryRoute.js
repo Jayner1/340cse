@@ -4,27 +4,53 @@ const invController = require("../controllers/invController");
 const utilities = require("../utilities/");
 const validate = require("../utilities/inventory-validation"); 
 
-router.get("/", utilities.checkLogin, utilities.handleErrors(invController.managementView));
-
-router.get("/management", utilities.handleErrors(invController.managementView));
+// Public routes (accessible to all, no login or account type check)
 router.get("/classification/:classificationId", utilities.handleErrors(invController.buildByClassificationId));
 router.get("/detail/:vehicleId", utilities.handleErrors(invController.getVehicleDetails));
-router.get("/add-classification", utilities.handleErrors(invController.buildAddClassification));
-router.post("/add-classification", utilities.handleErrors(invController.addClassification));
-router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventory));
-router.post("/add-inventory", utilities.handleErrors(invController.addInventory));
 router.get("/getInventory/:classificationId", utilities.handleErrors(invController.getInventoryJSON));
-router.get("/edit/:inv_id", utilities.checkLogin, utilities.handleErrors(invController.buildEditInventoryView));
-router.post("/update/", validate.inventoryRules(), validate.checkUpdateData, utilities.handleErrors(invController.updateInventory));
 
-router.get("/delete/:inv_id", 
-  utilities.checkLogin, 
-  utilities.handleErrors(invController.buildDeleteConfirmation) 
+// General management view (public for viewing, actions restricted below)
+router.get("/management", utilities.handleErrors(invController.managementView));
+
+// Administrative routes (require Employee or Admin account type)
+router.get("/", 
+  utilities.checkAdminOrEmployee, 
+  utilities.handleErrors(invController.managementView)
 );
 
+router.get("/add-classification", 
+  utilities.checkAdminOrEmployee, 
+  utilities.handleErrors(invController.buildAddClassification)
+);
+router.post("/add-classification", 
+  utilities.checkAdminOrEmployee, 
+  utilities.handleErrors(invController.addClassification)
+);
+router.get("/add-inventory", 
+  utilities.checkAdminOrEmployee, 
+  utilities.handleErrors(invController.buildAddInventory)
+);
+router.post("/add-inventory", 
+  utilities.checkAdminOrEmployee, 
+  utilities.handleErrors(invController.addInventory)
+);
+router.get("/edit/:inv_id", 
+  utilities.checkAdminOrEmployee, 
+  utilities.handleErrors(invController.buildEditInventoryView)
+);
+router.post("/update/", 
+  utilities.checkAdminOrEmployee, 
+  validate.inventoryRules(), 
+  validate.checkUpdateData, 
+  utilities.handleErrors(invController.updateInventory)
+);
+router.get("/delete/:inv_id", 
+  utilities.checkAdminOrEmployee, 
+  utilities.handleErrors(invController.buildDeleteConfirmation)
+);
 router.post("/delete/:inv_id", 
-  utilities.checkLogin, 
-  utilities.handleErrors(invController.processDeleteInventory) 
+  utilities.checkAdminOrEmployee, 
+  utilities.handleErrors(invController.processDeleteInventory)
 );
 
 module.exports = router;

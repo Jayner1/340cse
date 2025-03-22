@@ -7,7 +7,7 @@ const { validationResult } = require("express-validator");
 
 // Default route for account management
 router.get('/', 
-    utilities.checkLogin, // Assuming you have this middleware to check JWT
+    utilities.checkLogin,
     utilities.handleErrors(accountController.showAccountManagement)
 );
 
@@ -45,6 +45,38 @@ router.post('/register',
         next();
     },
     utilities.handleErrors(accountController.registerAccount)
+);
+
+// Account management route
+router.get('/management', 
+    utilities.checkLogin,
+    utilities.handleErrors(accountController.showAccountManagement)
+);
+
+// Update account routes
+router.get('/update/:account_id', 
+    utilities.checkLogin,
+    utilities.handleErrors(accountController.buildUpdateAccount)
+);
+
+router.post('/update',
+    utilities.checkLogin,
+    regValidate.updateAccountRules(),
+    regValidate.checkUpdateAccountData,
+    utilities.handleErrors(accountController.updateAccount)
+);
+
+// Change password route
+router.post('/change-password',
+    utilities.checkLogin,
+    regValidate.changePasswordRules(),
+    regValidate.checkChangePasswordData,
+    utilities.handleErrors(accountController.changePassword)
+);
+
+// Logout route
+router.get('/logout',
+    utilities.handleErrors(accountController.logoutAccount)
 );
 
 // Error handling middleware

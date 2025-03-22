@@ -2,14 +2,16 @@ const utilities = require("../utilities");
 const accountModel = require("../models/account-model");
 const pool = require("../database/index");
 const { check, validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs")
-const jwt = require("jsonwebtoken")
-require("dotenv").config()
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+
+const accountController = {};
 
 /* ****************************************
  *  Deliver Login View
  * **************************************** */
-async function buildLogin(req, res, next) {
+accountController.buildLogin = async function (req, res, next) {
     try {
         let nav = await utilities.getNav();
         const flashMessage = req.flash("notice")[0] || ""; 
@@ -21,19 +23,17 @@ async function buildLogin(req, res, next) {
     } catch (error) {
         next(error);
     }
-}
+};
 
 /* ****************************************
  *  Deliver Register View
  * **************************************** */
-async function buildRegister(req, res, next) {
+accountController.buildRegister = async function (req, res, next) {
     try {
         let nav = await utilities.getNav(); 
         const flashMessages = req.flash('notice'); 
         const flashMessage = flashMessages.length > 0 ? flashMessages[0] : ''; 
-
         const errors = req.flash('errors') || [];
-
         const { account_firstname = '', account_lastname = '', account_email = '' } = req.body;
 
         res.render("account/register", {
@@ -48,58 +48,54 @@ async function buildRegister(req, res, next) {
     } catch (error) {
         next(error);
     }
-}
-
+};
 
 /* ****************************************
  *  Login Account
  * **************************************** */
-async function loginAccount(req, res) {
-    let nav = await utilities.getNav()
-    const { account_email, account_password } = req.body
-    const accountData = await accountModel.getAccountByEmail(account_email)
+accountController.loginAccount = async function (req, res) {
+    let nav = await utilities.getNav();
+    const { account_email, account_password } = req.body;
+    const accountData = await accountModel.getAccountByEmail(account_email);
     if (!accountData) {
-      req.flash("notice", "Please check your credentials and try again.")
+      req.flash("notice", "Please check your credentials and try again.");
       res.status(400).render("account/login", {
         title: "Login",
         nav,
         errors: null,
         account_email,
-      })
-      return
+      });
+      return;
     }
     try {
       if (await bcrypt.compare(account_password, accountData.account_password)) {
-        delete accountData.account_password
-        const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 * 1000 })
-        if(process.env.NODE_ENV === 'development') {
-          res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
-        } else {
-          res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
-        }
-        return res.redirect("/account/")
-      }
-      else {
-        req.flash("message notice", "Please check your credentials and try again.")
+        delete accountData.account_password;
+        const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 * 1000 });
+        const cookieOptions = {
+          httpOnly: true,
+          maxAge: 3600 * 1000,
+          secure: process.env.NODE_ENV !== 'development'
+        };
+        res.cookie("jwt", accessToken, cookieOptions);
+        return res.redirect("/account/management");
+      } else {
+        req.flash("notice", "Please check your credentials and try again.");
         res.status(400).render("account/login", {
           title: "Login",
           nav,
           errors: null,
           account_email,
-        })
+        });
       }
     } catch (error) {
-      throw new Error('Access Forbidden')
+      throw new Error('Access Forbidden');
     }
-  }
+};
 
 /* ****************************************
  *  Process Registration
  * **************************************** */
-/* ****************************************
- *  Process Registration
- * **************************************** */
-async function registerAccount(req, res) {
+accountController.registerAccount = async function (req, res) {
     const { account_firstname, account_lastname, account_email, account_password } = req.body;
     const errors = validationResult(req);
 
@@ -181,45 +177,184 @@ async function registerAccount(req, res) {
             account_email
         });
     }
-}
+};
 
-async function showAccountManagement(req, res, next) {
+/* ****************************************
+ *  Show Account Management View
+ * **************************************** */
+accountController.showAccountManagement = async function (req, res, next) {
     try {
         let nav = await utilities.getNav();
-        
-        // Verify JWT token from cookie
-        const token = req.cookies.jwt;
-        if (!token) {
-            req.flash("notice", "Please log in to access your account.");
-            return res.redirect("/account/login");
-        }
-
-        // Decode token to get user info
-        let accountData;
-        try {
-            accountData = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        } catch (error) {
-            req.flash("notice", "Session expired. Please log in again.");
-            res.clearCookie("jwt");
-            return res.redirect("/account/login");
-        }
+        const account_firstname = res.locals.account_firstname || 'User';
+        const account_email = req.user?.account_email || '';
+        const account_id = req.user?.account_id;
+        const account_type = req.user?.account_type;
 
         res.render("account/management", {
             title: "Account Management",
             nav,
             flashMessage: req.flash("notice")[0] || "",
+            account_firstname,
+            account_email,
+            account_id,
+            account_type
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/* ****************************************
+ *  Build Update Account View
+ * **************************************** */
+accountController.buildUpdateAccount = async function (req, res, next) {
+    try {
+        const account_id = parseInt(req.params.account_id);
+        const loggedInUserId = req.user.account_id;
+
+        if (account_id !== loggedInUserId) {
+            req.flash("notice", "You can only update your own account.");
+            return res.redirect("/account/management");
+        }
+
+        let nav = await utilities.getNav();
+        const accountData = await accountModel.getAccountById(account_id);
+        if (!accountData) {
+            req.flash("notice", "Account not found.");
+            return res.redirect("/account/management");
+        }
+
+        res.render("account/update", {
+            title: "Update Account",
+            nav,
+            flashMessage: req.flash("notice")[0] || "",
+            errors: [],
+            account_id: accountData.account_id,
             account_firstname: accountData.account_firstname,
+            account_lastname: accountData.account_lastname,
             account_email: accountData.account_email
         });
     } catch (error) {
         next(error);
     }
-}
-
-module.exports = {
-    buildLogin,
-    buildRegister,
-    loginAccount,
-    registerAccount,
-    showAccountManagement
 };
+
+/* ****************************************
+ *  Update Account
+ * **************************************** */
+accountController.updateAccount = async function (req, res, next) {
+    const { account_id, account_firstname, account_lastname, account_email } = req.body;
+    try {
+        const updateResult = await accountModel.updateAccount(
+            parseInt(account_id),
+            account_firstname,
+            account_lastname,
+            account_email
+        );
+        if (updateResult) {
+            const accountData = await accountModel.getAccountById(parseInt(account_id));
+            delete accountData.account_password;
+            const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 * 1000 });
+            res.cookie("jwt", accessToken, { 
+                httpOnly: true, 
+                secure: process.env.NODE_ENV !== 'development', 
+                maxAge: 3600 * 1000 
+            });
+            req.flash("notice", "Account updated successfully.");
+            return res.redirect("/account/management");
+        } else {
+            req.flash("notice", "Account update failed.");
+            return res.redirect("/account/management");
+        }
+    } catch (error) {
+        console.error("updateAccount error:", error);
+        req.flash("notice", "An error occurred while updating the account.");
+        let nav = await utilities.getNav();
+        res.status(500).render("account/update", {
+            title: "Update Account",
+            nav,
+            flashMessage: req.flash("notice")[0] || "",
+            errors: [],
+            account_id,
+            account_firstname,
+            account_lastname,
+            account_email
+        });
+    }
+};
+
+/* ****************************************
+ *  Change Password
+ * **************************************** */
+accountController.changePassword = async function (req, res, next) {
+    const { account_id, account_password } = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(account_password, 10);
+        const updateResult = await accountModel.updatePassword(parseInt(account_id), hashedPassword);
+        if (updateResult) {
+            req.flash("notice", "Password changed successfully.");
+            return res.redirect("/account/management");
+        } else {
+            req.flash("notice", "Password change failed.");
+            return res.redirect("/account/management");
+        }
+    } catch (error) {
+        console.error("changePassword error:", error);
+        req.flash("notice", "An error occurred while changing the password.");
+        let nav = await utilities.getNav();
+        const accountData = await accountModel.getAccountById(parseInt(account_id));
+        res.status(500).render("account/update", {
+            title: "Update Account",
+            nav,
+            flashMessage: req.flash("notice")[0] || "",
+            errors: [],
+            account_id,
+            account_firstname: accountData.account_firstname,
+            account_lastname: accountData.account_lastname,
+            account_email: accountData.account_email
+        });
+    }
+};
+
+/* ****************************************
+ *  Logout Account
+ * **************************************** */
+accountController.logoutAccount = async function (req, res, next) {
+    try {
+        res.clearCookie('jwt', { 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV !== 'development' 
+        });
+        
+        if (req.session) {
+            req.session.destroy((err) => {
+                if (err) {
+                    console.error("Session destruction error:", err);
+                    throw new Error("Logout failed");
+                }
+                res.redirect('/');
+            });
+        } else {
+            res.redirect('/');
+        }
+    } catch (error) {
+        console.error("Logout error:", error);
+        req.flash("notice", "An error occurred during logout.");
+        next(error);
+    }
+};
+
+accountController.getMyAccount = async function (req, res, next) {
+    try {
+        let nav = await utilities.getNav();
+        res.render("account/my-account", {
+            title: "My Account",
+            nav,
+            flashMessage: req.flash("notice")[0] || ""
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = accountController;

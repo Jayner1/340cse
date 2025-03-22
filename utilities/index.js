@@ -15,6 +15,8 @@ Util.checkLogin = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     req.user = decoded; 
+    res.locals.loggedin = true; 
+    res.locals.account_firstname = decoded.account_firstname; 
     next();
   } catch (error) {
     req.flash("notice", "Session expired. Please log in again.");
@@ -23,25 +25,33 @@ Util.checkLogin = (req, res, next) => {
   }
 };
 
+/* ******************************
+ * Check JWT Token for Views
+ * ****************************** */
 Util.checkJWTToken = (req, res, next) => {
-  if (req.cookies.jwt) {
-   jwt.verify(
-    req.cookies.jwt,
-    process.env.ACCESS_TOKEN_SECRET,
-    function (err, accountData) {
-     if (err) {
-      req.flash("Please log in")
-      res.clearCookie("jwt")
-      return res.redirect("/account/login")
-     }
-     res.locals.accountData = accountData
-     res.locals.loggedin = 1
-     next()
-    })
+  const token = req.cookies.jwt;
+  if (token) {
+    jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, accountData) {
+        if (err) {
+          req.flash("notice", "Please log in");
+          res.clearCookie("jwt");
+          return res.redirect("/account/login");
+        }
+        res.locals.accountData = accountData;
+        res.locals.loggedin = true; 
+        res.locals.account_firstname = accountData.account_firstname; 
+        next();
+      }
+    );
   } else {
-   next()
+    res.locals.loggedin = false; 
+    res.locals.account_firstname = null; 
+    next();
   }
- }
+};
 
 /* ******************************
  * Existing Utility Functions
@@ -149,6 +159,33 @@ Util.buildClassificationList = async function (classification_id = null) {
   } catch (error) {
     console.error("buildClassificationList error: " + error);
     return '<select name="classification_id" id="classificationList" required><option value="">No classifications available</option></select>';
+  }
+};
+
+/* ******************************
+ * Check Admin or Employee Access Middleware
+ * ****************************** */
+Util.checkAdminOrEmployee = (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (!token) {
+    req.flash("notice", "Please log in with an Employee or Admin account to access this feature.");
+    return res.redirect("/account/login");
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const allowedTypes = ["Employee", "Admin"];
+    if (!allowedTypes.includes(decoded.account_type)) {
+      req.flash("notice", "Access denied. Only Employee or Admin accounts can perform this action.");
+      return res.redirect("/account/login");
+    }
+    req.user = decoded; 
+    res.locals.loggedin = true; 
+    res.locals.account_firstname = decoded.account_firstname;
+    next();
+  } catch (error) {
+    req.flash("notice", "Session expired or invalid. Please log in again.");
+    res.clearCookie("jwt");
+    return res.redirect("/account/login");
   }
 };
 

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+    <%- include('../partials/header') %>
+    
+    <div class="main-container">
+        <main>
+            <h1><%= title %></h1>
+            
+            <% if (flashMessage && flashMessage.length > 0) { %>
+                <div class="notice"><%= flashMessage %></div>
+            <% } %>
+            
+            <% if (errors && errors.length > 0) { %>
+                <ul class="error-list">
+                    <% errors.forEach(error => { %>
+                        <li><%= error.msg %></li>
+                    <% }) %>
+                </ul>
+            <% } %>
+            
+            <!-- Account Update Form -->
+            <form id="accountUpdateForm" action="/account/update" method="post" novalidate>
+                <fieldset>
+                    <legend>Account Update</legend>
+                    
+                    <input type="hidden" name="account_id" value="<%= account_id %>">
+                    
+                    <div class="form-group">
+                        <label for="account_firstname">First Name:</label>
+                        <input type="text" id="account_firstname" name="account_firstname" 
+                               value="<%= account_firstname || '' %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="account_lastname">Last Name:</label>
+                        <input type="text" id="account_lastname" name="account_lastname" 
+                               value="<%= account_lastname || '' %>" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="account_email">Email Address:</label>
+                        <input type="email" id="account_email" name="account_email" 
+                               value="<%= account_email || '' %>" required>
+                    </div>
+                    
+                    <button type="submit">Update Account</button>
+                </fieldset>
+            </form>
+            
+            <!-- Change Password Form -->
+            <form id="changePasswordForm" action="/account/change-password" method="post" novalidate>
+                <fieldset>
+                    <legend>Change Password</legend>
+                    
+                    <input type="hidden" name="account_id" value="<%= account_id %>">
+                    
+                    <div class="form-group">
+                        <label for="account_password">New Password:</label>
+                        <input type="password" id="account_password" name="account_password" required>
+                        <p class="password-info">Entering a new password will replace your current password. It must be at least 12 characters long, including one number, one uppercase letter, one lowercase letter, and one special character (!@#$%^&*).</p>
+                    </div>
+                    
+                    <button type="submit">Change Password</button>
+                </fieldset>
+            </form>
+        </main>
+        
+        <%- include('../partials/footer') %>
+    </div>
+    
+    <script>
+        document.getElementById('accountUpdateForm').addEventListener('submit', function(e) {
+            const firstname = document.getElementById('account_firstname').value.trim();
+            const lastname = document.getElementById('account_lastname').value.trim();
+            const email = document.getElementById('account_email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!firstname || !lastname || !email || !emailRegex.test(email)) {
+                e.preventDefault();
+                alert('All fields are required, and email must be valid.');
+            }
+        });
+
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('account_password').value;
+            const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{12,}$/;
+
+            if (!password || !passwordRegex.test(password)) {
+                e.preventDefault();
+                alert('Password must be at least 12 characters long, with one number, one uppercase letter, one lowercase letter, and one special character (!@#$%^&*).');
+            }
+        });
+    </script>
+</body>
+</html>
