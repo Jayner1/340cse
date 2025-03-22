@@ -1,34 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/css/login.css">
-</head>
-<body>
-    <%- include('../partials/header') %>
-    
-    <div class="main-container">
-        <main>
-            <h1>Account Management</h1>
-            
-            <% if (flashMessage && flashMessage.length > 0) { %>
-                <div class="notice"><%= flashMessage %></div>
-            <% } %>
-            
-            <h2>Welcome <%= account_firstname %></h2>
-            <p><a href="/account/update/<%= account_id %>" title="Update your account details">Update Account Information</a></p>
-            
-            <% if (account_type === 'Employee' || account_type === 'Admin') { %>
-                <h3>Inventory Management</h3>
-                <p><a href="/inv/" title="Manage inventory">Access Inventory Management</a></p>
-            <% } %>
-            
-            <p>Email: <%= account_email %></p>
-        </main>
-    </div>
-    
-    <%- include('../partials/footer') %>
-</body>
-</html>
+<div class="main-container">
+    <main>
+        <h1>Account Management</h1>
+        
+        <% if (flashMessage && flashMessage.length > 0) { %>
+            <div class="notice"><%= flashMessage %></div>
+        <% } %>
+        
+        <h2>Welcome <%= account_firstname %></h2>
+        <p><a href="/account/update/<%= account_id %>" title="Update your account details">Update Account Information</a></p>
+        
+        <% if (account_type === 'Employee' || account_type === 'Admin') { %>
+            <h3>Inventory Management</h3>
+            <p><a href="/inv/" title="Manage inventory">Access Inventory Management</a></p>
+        <% } %>
+        
+        <p>Email: <%= account_email %></p>
+    </main>
+</div>
