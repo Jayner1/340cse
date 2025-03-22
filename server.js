@@ -43,7 +43,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(cookieParser()); // Moved up to ensure cookies are parsed before routes
+app.use(cookieParser());
 
 /* ***********************
  * View Engine and Templates
@@ -56,7 +56,7 @@ app.set("layout", "./layouts/layout");
  * Routes
  *************************/
 app.use(express.static('public'));
-app.use(static); // Serve static files (including favicon.ico)
+app.use(static); 
 
 // Index Route
 app.get("/", utilities.handleErrors(baseController.buildHome));
