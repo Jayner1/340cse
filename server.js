@@ -55,6 +55,7 @@ app.set("layout", "./layouts/layout");
 /* ***********************
  * Routes
  *************************/
+app.use(express.static('public'));
 app.use(static); // Serve static files (including favicon.ico)
 
 // Index Route
