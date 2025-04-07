@@ -1,41 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/login.css">
-    <title><%= title %></title> 
-</head>
-<body>
-
-    <div class="main-container">
-        <h1><%= title %></h1>
-
-        <% if (flashMessage) { %> 
-            <div class="flash-message">
-                <p><%= flashMessage %></p>
-            </div>
-        <% } %>
-
-        <form id="loginForm" action="/account/login" method="post">
- 
-            <div>
-                <label for="account_email">Email Address</label>
-                <input type="email" id="account_email" name="account_email" required>
-            </div>
-
-            <div>
-                <label for="account_password">Password</label>
-                <input type="password" id="account_password" name="account_password" required>
-            </div>
-
-            <div>
-                <button type="submit">Login</button> 
-            </div>
-        </form>
-
-        <p>Don't have an account? <a href="/account/register">Register here</a></p>
-    </div>
-
-</body>
-</html>
+<div class="account-container">
+    <h1><%= title %></h1>
+    <% if (flashMessage) { %>
+        <div class="flash-message">
+            <p><%= flashMessage %></p>
+        </div>
+    <% } %>
+    <form id="loginForm" action="/account/login" method="post">
+        <div>
+            <label for="account_email">Email Address</label>
+            <input type="email" id="account_email" name="account_email" required value="<%= locals.account_email || '' %>">
+        </div>
+        <div>
+            <label for="account_password">Password</label>
+            <input type="password" id="account_password" name="account_password" required>
+        </div>
+        <div>
+            <button type="submit">Login</button>
+        </div>
+    </form>
+    <p>Don't have an account? <a href="/account/register">Register here</a></p>
+</div>

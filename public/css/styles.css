@@ -8,8 +8,6 @@ h1, h2, h3 {
   font-family: 'Archivo Black', sans-serif;
 }
 
-
-/* Header Styling */
 #top-header {
   display: flex;
   justify-content: space-between; 
@@ -60,7 +58,6 @@ a {
   color: inherit;
 }
 
-/* Navigation Styling */
 .main-nav {
   background-color: #333; 
   color: #fff; 
@@ -156,7 +153,6 @@ a {
   background-color: lightblue;
 }
 
-/* Section Layout */
 .content {
   display: flex;
   justify-content: space-between;
@@ -164,7 +160,6 @@ a {
   padding: 20px;
 }
 
-/* Left Section Styling */
 .left-section {
   flex: 1;
 }
@@ -188,7 +183,6 @@ a {
   padding: 20px;
 }
 
-/* Right Section Styling */
 .right-section {
   flex: 1; 
 }
@@ -203,7 +197,6 @@ a {
   margin-bottom: 15px; 
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .content {
     flex-direction: column; 
@@ -298,4 +291,286 @@ display: flex;
 flex-direction: column;
 gap: 20px;
 box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
+}
+
+.vehicle-detail {
+  background-color: white;
+  border: 10px solid blue;
+  padding: 20px;
+  margin: 20px auto;
+  width: 100%;
+  max-width: 1200px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+.account-container {
+  background-color: #fff;
+  border: 10px solid #007BFF;
+  padding: 30px;
+  margin: 20px auto;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.management-container {
+  background-color: #fff;
+  border: 10px solid #007BFF;
+  padding: 30px;
+  margin: 20px auto;
+  width: 90%;
+  max-width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.account-container h1, .management-container h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #007BFF;
+}
+
+.account-container button, .management-container button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: #0056b3;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.account-container button:hover, .management-container button:hover, .btn-primary:hover {
+  background-color: #003d82;
+}
+
+.account-container p, .management-container p {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.account-container a, .management-container a {
+  color: #0056b3;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.account-container a:hover, .management-container a:hover {
+  text-decoration: underline;
+  color: #003d82;
+}
+
+.management-container ul {
+  list-style: none;
+}
+
+.management-container ul li {
+  margin-bottom: 15px;
+}
+
+.account-container form div, .management-container form div {
+  margin-bottom: 20px;
+}
+
+.account-container label, .management-container label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.account-container input[type="email"],
+.account-container input[type="password"],
+.account-container input[type="text"],
+.management-container input[type="email"],
+.management-container input[type="text"],
+.management-container input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.account-container input:focus, .management-container input:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+.vehicle-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 0;
+}
+
+.vehicle-list li {
+  background-color: #fff;
+  border: 2px solid #007BFF;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vehicle-list img {
+  width: 100%;
+  height: auto;
+  max-width: 200px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.vehicle-list h2 {
+  font-size: 1.25rem;
+  margin: 10px 0;
+  color: #333;
+}
+
+.vehicle-list p {
+  font-size: 1rem;
+  color: #555;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .vehicle-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 0;
+}
+
+.vehicle-item {
+  background-color: #fff;
+  border: 2px solid #007BFF;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden; 
+}
+
+.vehicle-item img {
+  width: 100%;
+  height: auto;
+  max-width: 200px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.vehicle-item hr {
+  width: 80%;
+  border: 1px solid #007BFF;
+  margin: 10px 0;
+}
+
+.vehicle-item h2 {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 1.25rem;
+  margin: 10px 0;
+  color: #333;
+}
+
+.vehicle-item p {
+  font-size: 1rem;
+  color: #555;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .vehicle-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+#inv-display {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 0;
+}
+
+#inv-display li {
+  background-color: #fff;
+  border: 2px solid #007BFF;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden; 
+}
+
+#inv-display li img {
+  width: 100%;
+  height: auto;
+  max-width: 200px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+#inv-display .namePrice {
+  width: 100%;
+}
+
+#inv-display .namePrice hr {
+  width: 80%;
+  border: 1px solid #007BFF;
+  margin: 10px auto;
+}
+
+#inv-display .namePrice h2 {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 1.25rem;
+  margin: 10px 0;
+  color: #333;
+}
+
+#inv-display .namePrice h2 a {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+#inv-display .namePrice h2 a:hover {
+  text-decoration: underline;
+}
+
+#inv-display .namePrice span {
+  font-size: 1rem;
+  color: #555;
+  display: block;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  #inv-display {
+    grid-template-columns: 1fr;
+  }
 }

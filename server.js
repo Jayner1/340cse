@@ -45,6 +45,35 @@ app.use(function(req, res, next) {
 
 app.use(cookieParser());
 
+// Debug all cookies
+app.use((req, res, next) => {
+  console.log("All cookies:", req.cookies);
+  next();
+});
+
+// JWT Middleware
+app.use(async (req, res, next) => {
+  const token = req.cookies.jwt;
+  console.log("JWT cookie:", token);
+  if (token) {
+    try {
+      const jwt = require("jsonwebtoken");
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      console.log("Decoded JWT:", decoded);
+      req.user = decoded;
+      res.locals.loggedin = true;
+      res.locals.account_firstname = decoded.account_firstname || "User";
+    } catch (err) {
+      console.error("JWT verification failed:", err.message);
+      res.locals.loggedin = false;
+    }
+  } else {
+    res.locals.loggedin = false;
+  }
+  console.log("Logged in status:", res.locals.loggedin);
+  next();
+});
+
 /* ***********************
  * View Engine and Templates
  *************************/
@@ -80,7 +109,7 @@ app.use(async (req, res, next) => {
 
 /* ***********************
  * Express Error Handler
- * Place after all other middleware
+ * Place after all other middleware and routes
  *************************/
 app.use(async (err, req, res, next) => {
   let nav = await utilities.getNav();

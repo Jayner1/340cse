@@ -1,4 +1,4 @@
-<div class="main-container">
+<div class="account-container">
     <h1>Account Management</h1>
 
     <% if (flashMessage && flashMessage.length > 0) { %>
@@ -14,4 +14,21 @@
     <% } %>
 
     <p>Email: <%= account_email %></p>
+
+    <h3>Your Favorite Vehicles</h3>
+    <% if (favorites && favorites.length > 0) { %>
+        <ul>
+            <% favorites.forEach(favorite => { %>
+                <li>
+                    <%= favorite.inv_year %> <%= favorite.inv_make %> <%= favorite.inv_model %>
+                    <form action="/account/favorite/remove" method="POST" style="display:inline;">
+                        <input type="hidden" name="inv_id" value="<%= favorite.inv_id %>">
+                        <button type="submit">Remove</button>
+                    </form>
+                </li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>You have no favorite vehicles yet.</p>
+    <% } %>
 </div>

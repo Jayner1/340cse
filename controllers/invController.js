@@ -69,12 +69,11 @@ invCont.getVehicleDetails = async function (req, res) {
         nav,
       });
     }
-    const html = utilities.formatVehicleDetails(vehicle);
     let nav = await utilities.getNav();
     res.render("./inventory/detail", {
       title: `${vehicle.inv_make} ${vehicle.inv_model} Details`,
       nav,
-      vehicle: html,
+      vehicle,
     });
   } catch (error) {
     console.error("Error in getVehicleDetails:", error);

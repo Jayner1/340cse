@@ -1,5 +1,22 @@
 <div class="main-container">
-    <div class="main-image">
-        <%- vehicle %>
-    </div>
-</div>
+    <% if (vehicle) { %>
+      <h1><%= vehicle.inv_year %> <%= vehicle.inv_make %> <%= vehicle.inv_model %></h1>
+      <div class="main-image">
+        <img src="<%= vehicle.inv_image %>" alt="<%= vehicle.inv_make %> <%= vehicle.inv_model %>" class="vehicle-image">
+      </div>
+      <div class="vehicle-details">
+        <p><strong>Price:</strong> $<%= vehicle.inv_price %></p>
+        <p><strong>Mileage:</strong> <%= vehicle.inv_miles %> miles</p>
+        <p><strong>Color:</strong> <%= vehicle.inv_color %></p>
+        <p><strong>Description:</strong> <%= vehicle.inv_description %></p>
+      </div>
+      <% if (locals.loggedin) { %>
+        <form action="/account/favorite/add" method="POST">
+          <input type="hidden" name="inv_id" value="<%= vehicle.inv_id %>">
+          <button type="submit">Add to Favorites</button>
+        </form>
+      <% } %>
+    <% } else { %>
+      <p>No vehicle found for this ID.</p>
+    <% } %>
+  </div>

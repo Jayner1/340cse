@@ -85,4 +85,7 @@ router.use((err, req, res, next) => {
     res.status(500).send('Something went wrong!');
 });
 
+router.post('/favorite/add', utilities.checkLogin, utilities.handleErrors(accountController.addFavorite));
+router.post('/favorite/remove', utilities.checkLogin, utilities.handleErrors(accountController.removeFavorite));
+
 module.exports = router;

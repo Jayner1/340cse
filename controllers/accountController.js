@@ -357,4 +357,54 @@ accountController.getMyAccount = async function (req, res, next) {
     }
 };
 
+accountController.addFavorite = async function (req, res, next) {
+    const { inv_id } = req.body;
+    const account_id = req.user.account_id;
+    try {
+        await accountModel.addFavoriteVehicle(account_id, parseInt(inv_id));
+        req.flash("notice", "Vehicle added to favorites!");
+        res.redirect(`/inv/detail/${inv_id}`);
+    } catch (error) {
+        req.flash("notice", "Failed to add favorite. It may already be in your list.");
+        res.redirect(`/inv/detail/${inv_id}`);
+    }
+};
+
+accountController.removeFavorite = async function (req, res, next) {
+    const { inv_id } = req.body;
+    const account_id = req.user.account_id;
+    try {
+        await accountModel.removeFavoriteVehicle(account_id, parseInt(inv_id));
+        req.flash("notice", "Vehicle removed from favorites.");
+        res.redirect("/account/management");
+    } catch (error) {
+        req.flash("notice", "Failed to remove favorite.");
+        res.redirect("/account/management");
+    }
+};
+
+accountController.showAccountManagement = async function (req, res, next) {
+    try {
+        let nav = await utilities.getNav();
+        const account_firstname = res.locals.account_firstname || 'User';
+        const account_email = req.user?.account_email || '';
+        const account_id = req.user?.account_id;
+        const account_type = req.user?.account_type;
+        const favorites = await accountModel.getFavoriteVehicles(account_id);
+
+        res.render("account/management", {
+            title: "Account Management",
+            nav,
+            flashMessage: req.flash("notice")[0] || "",
+            account_firstname,
+            account_email,
+            account_id,
+            account_type,
+            favorites
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = accountController;
